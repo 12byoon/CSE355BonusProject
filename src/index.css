@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-base:    #f0f4f8;
+  --bg-surface: #ffffff;
+  --bg-card:    #f8fafc;
+  --bg-hover:   #f1f5f9;
+  --border:     #e2e8f0;
+
+  /* State colors — muted academic palette */
+  --q0:   #4f7ec9;  /* muted blue     */
+  --q1:   #b07d1a;  /* warm amber     */
+  --q2:   #c0622b;  /* terracotta     */
+  --q3:   #2e8f62;  /* sage green     */
+  --dead: #94a3b8;  /* light slate    */
+
+  --text-primary:   #1e293b;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling — light theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* State color text utilities */
+.state-q0 { color: var(--q0); }
+.state-q1 { color: var(--q1); }
+.state-q2 { color: var(--q2); }
+.state-q3 { color: var(--q3); }
+
+/* Button component classes */
+.btn-control {
+  @apply px-3 py-1.5 rounded-md text-sm border border-slate-300 text-slate-600
+         bg-white hover:bg-slate-50 hover:border-slate-400
+         active:bg-slate-100 transition-colors
+         disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-control-primary {
+  @apply px-4 py-1.5 rounded-md text-sm font-semibold
+         bg-blue-600 hover:bg-blue-700 active:bg-blue-800
+         text-white transition-colors
+         disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+/* D3 diagram styles */
+.pda-diagram {
+  width: 100%;
+  height: 100%;
+}
+
+.pda-diagram .node text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  pointer-events: none;
+  dominant-baseline: middle;
+  text-anchor: middle;
+}
+
+.pda-diagram .edge path {
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+.pda-diagram .edge text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  fill: #64748b;
+}
+
+.pda-diagram marker path {
+  stroke: none;
+}
+
+/* Input character highlighting */
+.input-char.consumed {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+.input-char.next {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+.input-char.pending {
+  color: var(--text-secondary);
+}
