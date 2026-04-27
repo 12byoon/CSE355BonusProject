@@ -7,6 +7,8 @@
  * @property {string[]} stack  - index 0 = bottom, last = top
  */
 
+// brandon yoon - CSE355
+
 // unique string key for a config, used to deduplicate branches
 export function configKey(config) {
   return `${config.state}|${config.remainingInput}|${config.stack.join(',')}`;
