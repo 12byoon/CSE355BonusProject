@@ -10,10 +10,7 @@ import StackPanel   from './components/StackPanel.jsx'
 import ConfigTable  from './components/ConfigTable.jsx'
 import ResultBanner from './components/ResultBanner.jsx'
 
-/** Speed → interval ms */
-function speedToMs(speed) {
-  return Math.round(1000 / speed)
-}
+const PLAY_INTERVAL_MS = 700
 
 export default function App() {
   const pda = NON_PALINDROME_PDA
@@ -23,7 +20,6 @@ export default function App() {
   const [simulation,  setSimulation]  = useState(null)
   const [stepIndex,   setStepIndex]   = useState(0)
   const [isPlaying,   setIsPlaying]   = useState(false)
-  const [speed,       setSpeed]       = useState(1)
 
   const playIntervalRef = useRef(null)
 
@@ -59,20 +55,12 @@ export default function App() {
         }
         return prev + 1
       })
-    }, speedToMs(speed))
-  }, [simulation, speed, stopPlay])
+    }, PLAY_INTERVAL_MS)
+  }, [simulation, stopPlay])
 
   useEffect(() => {
     if (isLastStep && isPlaying) stopPlay()
   }, [isLastStep, isPlaying, stopPlay])
-
-  useEffect(() => {
-    if (isPlaying) {
-      stopPlay()
-      setTimeout(startPlay, 10)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [speed])
 
   useEffect(() => () => stopPlay(), [stopPlay])
 
@@ -124,6 +112,11 @@ export default function App() {
     setStepIndex((p) => Math.min(p + 1, totalSteps - 1))
   }
 
+  function handleSeek(index) {
+    stopPlay()
+    setStepIndex(index)
+  }
+
   // render
   return (
     <div className="min-h-screen bg-[#f0f4f8] text-slate-800">
@@ -139,23 +132,17 @@ export default function App() {
               stepIndex={stepIndex}
               totalSteps={totalSteps}
               isPlaying={isPlaying}
-              speed={speed}
               onStepBack={handleStepBack}
               onStepForward={handleStepForward}
               onPlay={startPlay}
               onPause={stopPlay}
               onReset={handleReset}
-              onSpeedChange={(s) => setSpeed(s)}
+              onSeek={handleSeek}
               disabled={false}
             />
           </>
         )}
 
-        <div className="text-xs text-slate-400 flex gap-4">
-          <span>Space: play/pause</span>
-          <span>← →: step</span>
-          <span>R: reset</span>
-        </div>
       </div>
 
       {/* ── Main content ── */}
@@ -175,7 +162,7 @@ export default function App() {
           {/* Stack towers */}
           <div className="border-b border-slate-200 p-4 bg-[#f8fafc]">
             <SectionHeader>
-              Active Configurations
+              Live Branches
               {simulation && (
                 <span className="ml-2 text-xs text-slate-400 font-normal">
                   ({currentConfigs.length} live)
@@ -193,7 +180,7 @@ export default function App() {
 
           {/* Config table */}
           <div className="p-4 bg-white">
-            <SectionHeader>Configuration Table</SectionHeader>
+            <SectionHeader>Branch Details</SectionHeader>
             {simulation ? (
               <ConfigTable
                 configs={currentConfigs}

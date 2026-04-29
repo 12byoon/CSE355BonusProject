@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
 
-const EXAMPLES = ['01', '10', '011', '0010', '10110', '010', '0110', '00100']
-
-// input field + run button + example strings
 export default function InputPanel({ onRun, disabled }) {
   const [value, setValue] = useState('')
   const [error, setError]  = useState('')
@@ -24,12 +21,6 @@ export default function InputPanel({ onRun, disabled }) {
     }
     setError('')
     onRun(value)
-  }
-
-  function handleExample(ex) {
-    setValue(ex)
-    setError('')
-    onRun(ex)
   }
 
   function handleKeyDown(e) {
@@ -56,13 +47,13 @@ export default function InputPanel({ onRun, disabled }) {
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Enter binary string (e.g. 0110)"
+            placeholder="Enter string"
             spellCheck={false}
             className="
               w-full px-3 py-2 rounded-md
               bg-white border border-slate-300
               text-slate-800 placeholder-slate-400
-              font-mono text-base tracking-widest
+              text-base
               focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100
               transition-colors
             "
@@ -71,7 +62,7 @@ export default function InputPanel({ onRun, disabled }) {
             <span className="text-red-600 text-xs">{error}</span>
           )}
           <div className="text-xs text-slate-400">
-            {value.length > 0 ? `Length: ${value.length}` : 'Empty string (palindrome)'}
+            {value.length > 0 ? `Length: ${value.length}` : ''}
           </div>
         </div>
 
@@ -90,29 +81,6 @@ export default function InputPanel({ onRun, disabled }) {
         </button>
       </div>
 
-      {/* Example strings */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-xs text-slate-400">Examples:</span>
-        {EXAMPLES.map((ex) => {
-          const isPalin = ex === ex.split('').reverse().join('')
-          return (
-            <button
-              key={ex}
-              onClick={() => handleExample(ex)}
-              className={`
-                text-xs px-2 py-0.5 rounded-md border font-mono transition-colors
-                ${isPalin
-                  ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100'
-                  : 'border-green-200 text-green-700 bg-green-50 hover:bg-green-100'
-                }
-              `}
-              title={isPalin ? 'Palindrome → REJECT' : 'Non-palindrome → ACCEPT'}
-            >
-              {ex}
-            </button>
-          )
-        })}
-      </div>
     </div>
   )
 }
