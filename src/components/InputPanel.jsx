@@ -35,7 +35,7 @@ export default function InputPanel({ onRun, disabled }) {
           NPDA Visualizer
         </h1>
         <span className="text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-md px-2 py-0.5">
-          Non-Palindrome Acceptor
+          L = &#123; w ∈ &#123;0,1&#125;* | w ≠ w&#7487; &#125;
         </span>
       </div>
 

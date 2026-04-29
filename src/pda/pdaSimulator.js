@@ -114,7 +114,71 @@ export function runSimulation(pda, inputString) {
   return { history, finalResult };
 }
 
-// get accept/reject/running status for the current step (used by UI while stepping)
+export function buildComputationTree(pda, inputString) {
+  let nextId = 0
+  const nodes = []
+
+  function makeNode(config, stepIndex, parentId) {
+    const node = { id: nextId++, config, stepIndex, parentId, childIds: [], accepted: false, dead: false }
+    nodes.push(node)
+    return node
+  }
+
+  function epsilonCloseOne(config) {
+    const seen = new Map()
+    const worklist = [config]
+    seen.set(configKey(config), config)
+    while (worklist.length > 0) {
+      const cfg = worklist.pop()
+      for (const t of applicableTransitions(pda, cfg, null)) {
+        const next = applyTransition(cfg, t, null)
+        const key = configKey(next)
+        if (!seen.has(key)) { seen.set(key, next); worklist.push(next) }
+      }
+    }
+    return Array.from(seen.values())
+  }
+
+  function getChildConfigs(config) {
+    if (config.remainingInput.length === 0) return []
+    const symbol = config.remainingInput[0]
+    const results = new Map()
+    for (const t of applicableTransitions(pda, config, symbol)) {
+      const next = applyTransition(config, t, symbol)
+      for (const cfg of epsilonCloseOne(next)) {
+        const key = configKey(cfg)
+        if (!results.has(key)) results.set(key, cfg)
+      }
+    }
+    return Array.from(results.values())
+  }
+
+  const startConfigs = epsilonCloseOne(createInitialConfig(pda, inputString))
+  let frontier = startConfigs.map(cfg => makeNode(cfg, 0, null))
+  const rootIds = frontier.map(n => n.id)
+
+  while (frontier.length > 0) {
+    const nextFrontier = []
+    for (const parentNode of frontier) {
+      if (parentNode.config.remainingInput.length === 0) continue
+      const childConfigs = getChildConfigs(parentNode.config)
+      for (const cfg of childConfigs) {
+        const child = makeNode(cfg, parentNode.stepIndex + 1, parentNode.id)
+        parentNode.childIds.push(child.id)
+        nextFrontier.push(child)
+      }
+    }
+    frontier = nextFrontier
+  }
+
+  for (const node of nodes) {
+    node.accepted = pda.acceptStates.includes(node.config.state) && node.config.remainingInput.length === 0
+    node.dead = !node.accepted && node.childIds.length === 0
+  }
+
+  return { nodes, rootIds }
+}
+
 export function stepResult(pda, configs, isLastStep) {
   if (configs.some((cfg) => isAccepting(pda, cfg))) return 'accept';
   if (isLastStep && configs.length === 0) return 'reject';

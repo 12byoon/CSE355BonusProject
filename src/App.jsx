@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 import { NON_PALINDROME_PDA } from './pda/nonPalindromePDA.js'
-import { runSimulation, stepResult } from './pda/pdaSimulator.js'
+import { runSimulation, stepResult, buildComputationTree } from './pda/pdaSimulator.js'
 
-import InputPanel   from './components/InputPanel.jsx'
-import ControlBar   from './components/ControlBar.jsx'
+import InputPanel      from './components/InputPanel.jsx'
+import ControlBar      from './components/ControlBar.jsx'
+import ComputationTree from './components/ComputationTree.jsx'
 import StateDiagram from './components/StateDiagram.jsx'
 import StackPanel   from './components/StackPanel.jsx'
 import ConfigTable  from './components/ConfigTable.jsx'
@@ -18,6 +19,7 @@ export default function App() {
   // simulation state
   const [fullInput,   setFullInput]   = useState('')
   const [simulation,  setSimulation]  = useState(null)
+  const [tree,        setTree]        = useState(null)
   const [stepIndex,   setStepIndex]   = useState(0)
   const [isPlaying,   setIsPlaying]   = useState(false)
 
@@ -95,6 +97,7 @@ export default function App() {
     const result = runSimulation(pda, input)
     setFullInput(input)
     setSimulation(result)
+    setTree(buildComputationTree(pda, input))
     setStepIndex(0)
   }
 
@@ -148,11 +151,19 @@ export default function App() {
       {/* ── Main content ── */}
       <div className="flex items-start">
 
-        {/* Left: State Diagram */}
-        <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200 p-4">
-          <SectionHeader>State Diagram</SectionHeader>
-          <div className="h-[420px] bg-white rounded-lg border border-slate-200 shadow-sm">
-            <StateDiagram pda={pda} activeStates={activeStates} />
+        {/* Left: State Diagram + Computation Tree */}
+        <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200 p-4 gap-4">
+          <div>
+            <SectionHeader>State Diagram</SectionHeader>
+            <div className="h-[280px] bg-white rounded-lg border border-slate-200 shadow-sm">
+              <StateDiagram pda={pda} activeStates={activeStates} />
+            </div>
+          </div>
+          <div>
+            <SectionHeader>Computation Tree</SectionHeader>
+            <div className="h-[420px] bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+              <ComputationTree tree={tree} stepIndex={stepIndex} pda={pda} />
+            </div>
           </div>
         </div>
 
